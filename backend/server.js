@@ -9,7 +9,8 @@ const db = mysql.createConnection({
     host: "localhost",
     user: 'root',
     password: 'pass',
-    database: 'ticketsdb'
+    database: 'ticketsdb',
+    multipleStatements: true
 })
 
 app.get('/', (req, res) => {
@@ -19,6 +20,19 @@ app.get('/', (req, res) => {
 app.get('/theatres', (req, res) => {
     const sql = "SELECT * FROM theatres"
     db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
+
+app.get('/movies', (req, res) => {
+    const sqlMovies =  `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
+                        FROM movies m
+                        JOIN theatres ON theatreId = theatres.id;`
+    const sqlGenres =  `SELECT gf.movieId, g.genre
+                        FROM genreref gf
+                        JOIN genres g on gf.genreId = g.id`
+    db.query(sqlMovies + sqlGenres, (err, data) => {
         if(err) return res.json(err);
         return res.json(data)
     })
