@@ -1,14 +1,18 @@
 import { Outlet } from 'react-router'
 import Sidebar from './components/sidebar'
 import Navbar from './components/navbar'
+import Footer from './components/footer'
 
 export default function layout() {
     return(
         <>
         <Sidebar />
-        <div className='pl-[20%] bg-linear-to-b from-white to-cyan-50 to-[100vh]'>
-            <Navbar />
-            <Outlet />
+        <div className='bg-linear-to-b from-white to-cyan-50 to-[100vh]'>
+            <div className='pl-[20%]'>
+                <Navbar />
+                <Outlet />
+            </div>
+            <Footer /> 
         </div>
         </>
     )
