@@ -26,12 +26,12 @@ export default function navbar() {
                     onChange={handleSearchChange}
                 />
                 <MagnifyingGlassIcon weight='bold' size={16} className='absolute left-4 top-[50%] mt-[-8px] pointer-events-none' />
-                <p onClick={handleClearSearch} className='absolute top-[50%] right-4 text-sm mt-[-10px] poppins-medium tracking-tighter text-(--primary-color) cursor-pointer'>Clear</p>
+                <p onClick={handleClearSearch} className='absolute top-[50%] right-4 text-sm mt-[-10px] poppins-medium tracking-tighter text-(--primary-color) cursor-pointer transition duration-300 hover:text-(--text-dark-color)'>Clear</p>
             </div>
-            <a className='flex items-center gap-2 transition cursor-pointer'>
-                <UserIcon weight='bold' size={24} />
-                <p className='font-medium'>Log In</p>
-            </a>
+            <div className='flex items-center gap-2 cursor-pointer group'>
+                <UserIcon weight='bold' size={24} className='text-(--primary-color) group-hover:text-(--text-dark-color) transition duration-300'/>
+                <p className='font-medium text-(--text-light-color) group-hover:text-(--text-dark-color) transition duration-300'>Log In</p>
+            </div>
         </div>
     )
 }

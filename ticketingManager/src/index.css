@@ -3,6 +3,8 @@
 
 :root {
     --primary-color: #39cccc;
+    --text-light-color: #515151;
+    --text-dark-color: #010101;
 }
 
 .poppins-thin {
@@ -114,11 +116,11 @@
 }
 
 a:hover {
-    color: #010101
+    color: var(--text-dark-color)
 }
 
 a.active h1 {
-    color: #010101;
+    color: var(--text-dark-color);
 }
 
 a.active {
@@ -126,20 +128,37 @@ a.active {
 }
 
 a {
-    color: #515151
+    color: var(--text-light-color)
 }
 
-@keyframes underline {
-    from {}
-    to {}
+.hover-underline {
+  display: inline-flex;
+  position: relative;
 }
-.hoverUnderline {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: calc(100% - 34px);
+  transform: scaleX(0);
+  height: 1px;
+  bottom: 0;
+  left: 34px;
+  background-color: var(--primary-color);
+  transition: 0.3s ease-out;
+  transform-origin: bottom left;
 }
-.hoverUnderline:hover {
-    
-    
-    animation-name: underline;
-    animation-duration: 2s;
+
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.hover-underline.title::after {
+    width: 100%;
+    left: 0
+}
+
+.hover-dim:hover {
+    filter: brightness(90%)
 }

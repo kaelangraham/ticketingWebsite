@@ -10,15 +10,15 @@ export default function sidebar() {
             </NavLink>
             
             <div className='flex flex-col gap-6 pl-2'>
-                <NavLink to='/' className='flex items-center gap-3 w-min transition duration-300'>
+                <NavLink to='/' className='flex items-center gap-3 w-min transition duration-300 tracking-tight'>
                     <FilmStripIcon size={26} width={26} />
                     <h1 className='poppins-medium'>MOVIES</h1>
                 </NavLink>
-                <NavLink to='/sessions' className='flex items-center gap-3 w-min transition duration-300'>
+                <NavLink to='/sessions' className='flex items-center gap-3 w-min transition duration-300 tracking-tight'>
                     <ClockIcon size={26} width={26}/>
                     <h1 className='poppins-medium w-max'>SESSION TIMES</h1>
                 </NavLink>
-                <NavLink to='/cinemas' className='flex items-center gap-3 w-min transition duration-300'>
+                <NavLink to='/cinemas' className='flex items-center gap-3 w-min transition duration-300 tracking-tight'>
                     <VideoCameraIcon size={26} width={26}/>
                     <h1 className='poppins-medium'>CINEMAS</h1>
                 </NavLink>
