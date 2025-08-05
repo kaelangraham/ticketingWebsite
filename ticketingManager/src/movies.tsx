@@ -6,7 +6,6 @@ import lrgImg2 from './assets/deepCoverLrg.jpg'
 
 export default function movies() {
     const [moviesData, setMoviesData] = useState([])
-    const [genreData, setGenreData] = useState([])
     const [displayList, setDisplayList] = useState(true)
     const sortingTypesList = ['None', 'A-Z', 'Runtime', 'Release Date']
     const queryTypesList = ['id', 'name', 'runtime', 'releaseDate']
@@ -17,11 +16,9 @@ export default function movies() {
         const queryType = queryTypesList[sortingTypesList.indexOf(sortingType)]
         fetch(`http://localhost:8081/movies?sortType=${queryType}`)
         .then(res => res.json())
-        .then(data => {setMoviesData(data[0]), setGenreData(data[1])})
+        .then(data => {setMoviesData(data)})
         .catch(err => console.log(err))
     }, [sortingType])
-    useEffect(() => {
-    }, [moviesData, genreData])
 
     const handleChangeSortType = () => {
         const currentIndex = sortingTypesList.indexOf(sortingType)
@@ -33,11 +30,10 @@ export default function movies() {
     return(
         <>
         {popUpActive && (
-            <>
-            <div onClick={() => popUpActive && setPopUpActive(false)} className='backdrop-blur-xs brightness-25 fixed h-1/1 w-[calc(100%-520px)] top-0 left-0'>
+            <div>
+            <div onClick={() => popUpActive && setPopUpActive(false)} className='backdrop-blur-xs brightness-25 fixed h-1/1 w-[calc(100%-520px)] top-0 left-0 z-50'/>
+            <GenresPopUp onClosePopUp={() => setPopUpActive(false)} />
             </div>
-            <GenresPopUp />
-            </>
             )}
         <div className='flex overflow-hidden gap-3'>
             <div className='w-210 h-110 overflow-hidden shrink-0 rounded-lg'>
@@ -64,7 +60,9 @@ export default function movies() {
 
         </div>
 
-        {displayList ? (
+        {moviesData.length > 0 ?
+        
+        displayList ? (
         <div className='flex flex-col gap-10 pb-20'>
             {moviesData.map((d, i) => (
                 <div className='flex items-end w-210'>
@@ -106,6 +104,11 @@ export default function movies() {
             ))}
 
         </div>
+        ): (
+            <div className='pb-20 pointer-events-none select-none'>
+                <h1 className='poppins-medium text-2xl'>Our server is down!</h1>
+                <p className='poppins-light text-sm'>Try again in a few minutes...</p>
+            </div>
         )}
         </>
     )

@@ -16,12 +16,12 @@ export default function footer() {
             <div className=''>
                 <h1 className='poppins-semibold tracking-tight pb-2'>About Us</h1>
                 <div className='flex gap-3'>
-                    <p className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>About Tickets'R'Us</p>
-                    <p className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Careers</p>
-                    <p className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>FAQ</p>
-                    <p className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Accessibility</p>
-                    <p className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Gift Card Balance</p>
-                    <p className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Contact Us</p>
+                    <a href='#' className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>FAQ</a>
+                    <a href='#' className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Careers</a>
+                    <a href='#' className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>About Tickets'R'Us</a>
+                    <a href='#' className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Accessibility</a>
+                    <a href='#' className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Gift Card Balance</a>
+                    <a href='#' className='poppins-regular tracking-tight text-sm hover:text-(--primary-color) cursor-pointer transition duration-300'>Contact Us</a>
                 </div>
 
             </div>

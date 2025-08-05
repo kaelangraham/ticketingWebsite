@@ -25,16 +25,24 @@ app.get('/theatres', (req, res) => {
     })
 })
 
+app.get('/genres', (req, res) => {
+    const searchTerm = req.query.search
+    const sql = `SELECT g.id, g.genre
+                 FROM genres g
+                 WHERE g.genre LIKE '%${searchTerm}%'`
+    db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
+
 app.get('/movies', (req, res) => {
     const sortType = req.query.sortType
     const sqlMovies =  `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
                         FROM movies m
                         JOIN theatres ON theatreId = theatres.id
                         ORDER BY ${sortType} ASC;`
-    const sqlGenres =  `SELECT gf.movieId, g.genre
-                        FROM genreref gf
-                        JOIN genres g on gf.genreId = g.id`
-    db.query(sqlMovies + sqlGenres, (err, data) => {
+    db.query(sqlMovies, (err, data) => {
         if(err) return res.json(err);
         return res.json(data)
     })

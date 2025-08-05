@@ -14,14 +14,14 @@ export default function sidebar() {
                     <FilmStripIcon size={26} width={26} />
                     <h1 className='poppins-medium'>MOVIES</h1>
                 </NavLink>
-                <NavLink to='/sessions' className='flex items-center gap-3 w-fit transition duration-300 tracking-tight'>
+                <a href='#' className='flex items-center gap-3 w-fit transition duration-300 tracking-tight'>
                     <ClockIcon size={26} width={26}/>
                     <h1 className='poppins-medium w-max'>SESSION TIMES</h1>
-                </NavLink>
-                <NavLink to='/cinemas' className='flex items-center gap-3 w-fit transition duration-300 tracking-tight'>
+                </a>
+                <a href='#' className='flex items-center gap-3 w-fit transition duration-300 tracking-tight'>
                     <VideoCameraIcon size={26} width={26}/>
                     <h1 className='poppins-medium'>CINEMAS</h1>
-                </NavLink>
+                </a>
                 <a href='#' className='flex items-center gap-3 w-fit transition duration-300 tracking-tight'>
                     <CalendarDotsIcon size={26} width={26}/>
                     <h1 className='poppins-medium'>Events & Festivals</h1>

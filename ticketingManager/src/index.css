@@ -164,3 +164,6 @@ a {
     filter: brightness(90%)
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
