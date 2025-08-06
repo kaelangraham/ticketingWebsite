@@ -3,6 +3,7 @@ import { ClockIcon, HeartIcon, PlayIcon, SlidersHorizontalIcon, ArrowsDownUpIcon
 import GenresPopUp from './components/genreFiltersPopUp'
 import lrgImg1 from './assets/sorryBabyLrg.jpg'
 import lrgImg2 from './assets/deepCoverLrg.jpg'
+import { NavLink } from 'react-router'
 
 export default function movies() {
     const [moviesData, setMoviesData] = useState([])
@@ -66,16 +67,20 @@ export default function movies() {
         <div className='flex flex-col gap-10 pb-20'>
             {moviesData.map((d, i) => (
                 <div className='flex items-end w-210'>
-                    <img src={d.coverImg} className='h-60 rounded-lg cursor-pointer hover-dim transition duration-300'/>
+                    <NavLink to={`/movies/${d.id}`} className='shrink-0'>
+                        <img src={d.coverImg} className='h-60 rounded-lg cursor-pointer hover-dim transition duration-300'/>
+                    </NavLink>
                     <div className='pl-8 flex flex-col gap-2'>
-                        <h1 className='hover-underline title cursor-pointer poppins-semibold text-2xl w-max'>{d.name}</h1>
+                        <NavLink to={`/movies/${d.id}`}>
+                            <h1 className='hover-underline title cursor-pointer poppins-semibold text-2xl w-max'>{d.name}</h1>
+                        </NavLink>
                         <p className='text-xs poppins-light tracking-tight'>{d.runtime + ' | ' + d.releaseDate}</p>
                         <p className='poppins-light'>{d.description}</p>
                         <div className='flex gap-4'>
-                            <a className='flex items-center gap-2 cursor-pointer hover-underline'>
+                            <NavLink to={`/movies/${d.id}`} className='flex items-center gap-2 cursor-pointer hover-underline'>
                                 <ClockIcon size={26} className='text-(--primary-color)'/>
                                 <p>Times & Tickets</p>
-                            </a>
+                            </NavLink>
                             <a className='flex items-center gap-2 cursor-pointer hover-underline'>
                                 <PlayIcon size={26} className='text-(--primary-color)'/>
                                 <p>Trailer</p>
@@ -93,8 +98,12 @@ export default function movies() {
         <div className='grid grid-cols-4 w-210 gap-12 pb-20'>
             {moviesData.map((d, i) => (
                 <div className='text-pretty flex flex-col gap-2'>
-                    <img src={d.coverImg} className='w-1/1 rounded-lg cursor-pointer hover-dim transition duration-300'/>
-                    <h1 className='hover-underline title cursor-pointer poppins-semibold w-fit'>{d.name}</h1>
+                    <NavLink to={`/movies/${d.id}`}>
+                        <img src={d.coverImg} className='w-1/1 rounded-lg cursor-pointer hover-dim transition duration-300'/>
+                    </NavLink>
+                    <NavLink to={`/movies/${d.id}`}>
+                        <h1 className='hover-underline title cursor-pointer poppins-semibold w-fit'>{d.name}</h1>
+                    </NavLink>
                     <p className='text-xs poppins-light tracking-tight'>{d.runtime + ' | ' + d.releaseDate}</p>
                     <a className='flex items-center gap-2 cursor-pointer hover-underline w-fit'>
                         <HeartIcon size={26} className='text-(--primary-color)'/>

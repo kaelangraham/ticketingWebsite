@@ -38,15 +38,19 @@ app.get('/genres', (req, res) => {
 
 app.get('/movies', (req, res) => {
     const sortType = req.query.sortType
+    const movieId = req.query.movieId
     const sqlMovies =  `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
                         FROM movies m
                         JOIN theatres ON theatreId = theatres.id
-                        ORDER BY ${sortType} ASC;`
+                        ${movieId ? `WHERE m.id = ${movieId}` : ''}
+                        ${sortType ? `ORDER BY ${sortType} ASC` : ''};`
     db.query(sqlMovies, (err, data) => {
         if(err) return res.json(err);
         return res.json(data)
     })
 })
+
+
 
 app.listen(8081, () => {
     console.log("listening")

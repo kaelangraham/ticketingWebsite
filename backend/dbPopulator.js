@@ -42,9 +42,9 @@ db.query("SELECT * FROM genres; SELECT * FROM theatres; SELECT * FROM movies ORD
                 const runtime = row.runtime
                 const coverImg = row.coverImg
                 const releaseDate = row.releaseDate
-                const theatreId = Math.floor(Math.random() * (theatres.length))
-                const availableTickets = theatres[theatreId][1]
-                const totalTickets = theatres[theatreId][1]
+                const theatreId = Math.floor(Math.random() * (theatres.length) + 1)
+                const availableTickets = theatres[theatreId - 1][1]
+                const totalTickets = theatres[theatreId - 1][1]
 
                 const ticketBasePrice = 15
                 const runtimePrice = runtime[0] * 2
@@ -56,7 +56,7 @@ db.query("SELECT * FROM genres; SELECT * FROM theatres; SELECT * FROM movies ORD
                 const ticketSenior = (ticketBasePrice + runtimePrice + capacityPrice - 4).toFixed(2)
 
                 const openingHour = 9
-                const closingHour = 24
+                const closingHour = 23
 
                 const showingTimeHour = String(Math.floor(Math.random() * (closingHour - openingHour + 1)) + openingHour).padStart(2, '0')
                 const showingTimeMinute = String(Math.floor(Math.random() * 4) * 15).padStart(2, '0')
@@ -69,7 +69,6 @@ db.query("SELECT * FROM genres; SELECT * FROM theatres; SELECT * FROM movies ORD
                 showingDateTemp.setDate(today.getDate() + Math.floor(Math.random() * (showingDateRange + 1)))
 
                 const showingDate = showingDateTemp.toISOString().slice(0,10)
-
                 const moviesInsertSql = "INSERT INTO movies (name, description, theatreId, availableTickets, totalTickets, ticketAdult, showingTime, showingDate, runtime, coverImg, releaseDate, ticketChild, ticketStudent, ticketSenior) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 // ADD TO MOVIES
 
