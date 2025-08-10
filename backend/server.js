@@ -4,6 +4,7 @@ const cors = require('cors')
 
 const app = express()
 app.use(cors())
+app.use(express.json())
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -50,6 +51,36 @@ app.get('/movies', (req, res) => {
     })
 })
 
+app.get('/tickets', (req, res) => {
+    const movieId = req.query.movieId 
+    const sql = `SELECT *
+                 FROM tickets
+                 WHERE movieId = ${movieId};`
+    db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
+
+app.post('/order', (req, res) => {
+    console.log(req.body)
+    const { movieId, availableTickets, buyerEmail, tickets } = req.body
+
+    let sqlAddTickets = ''
+    tickets.map(d => {
+        sqlAddTickets = sqlAddTickets + `INSERT INTO tickets 
+                                         (movieId, ticketId, buyerEmail, ticketType) 
+                                         VALUES ('${movieId}', '${d.ticketId}', '${buyerEmail}', '${d.ticketType}'); `
+    })
+    const sqlUpdateMovies = `UPDATE movies SET availableTickets=${availableTickets}
+                             WHERE id =${movieId};`
+    const sql = sqlAddTickets + sqlUpdateMovies
+
+    db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
 
 
 app.listen(8081, () => {

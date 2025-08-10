@@ -1,11 +1,12 @@
-import { useParams } from 'react-router'
+import { useParams, NavLink, useNavigate } from 'react-router'
 import { useEffect, useState } from 'react'
 import { PlayIcon, HeartIcon, CaretLeftIcon, PlusIcon, MinusIcon } from '@phosphor-icons/react'
-import { NavLink } from 'react-router'
 
 export default function movieInfo() {
+    let navigate = useNavigate()
     let movieId = useParams().movieId
     const [movieData, setMovieData] = useState([])
+    const [ticketData, setTicketData] = useState([])
     const [showingDate, setShowingDate] = useState<Date>(new Date())
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const months = ['Janurary', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -18,12 +19,20 @@ export default function movieInfo() {
     const [remainingTickets, setRemainingTickets] = useState(0)
     const [totalTickets, setTotalTickets] = useState(0)
     const [totalCost, setTotalCost] = useState(0)
+    const [buyersEmail, setBuyersEmail] = useState('')
+    const [validEmail, setValidEmail] = useState(true)
 
     useEffect(() => {
         fetch(`http://localhost:8081/movies?movieId=${movieId}`)
         .then(res => res.json())
         .then(data => {data.length > 0 ? setMovieData(data[0]) : ''})
         .catch(err => console.log(err))
+
+        fetch(`http://localhost:8081/tickets?movieId=${movieId}`)
+        .then(res => res.json())
+        .then(data => {data.length > 0 ? setTicketData(data) : ''})
+        .catch(err => console.log(err))
+        
     }, [])
 
     useEffect(() => {
@@ -67,6 +76,75 @@ export default function movieInfo() {
         if(remainingTickets - change >= 0) {
         setSeniorTickets(curr => curr + change)
         }
+    }
+    const handleEmailChange = (event) => {
+        setBuyersEmail(event.target.value)
+    }
+    const handleCheckout = () => {
+        if(validateEmail()) {
+            setValidEmail(true)
+            const tickets = handleTickets()
+            const ticketData = {
+                movieId: movieId,
+                availableTickets: remainingTickets,
+                buyerEmail: buyersEmail,
+                tickets: tickets
+            }
+            // add to ticketsDB ++ update moviesDB
+            fetch('http://localhost:8081/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ticketData)
+            })
+            .then(res => res.json())
+            .then(data => navigate('/success'))
+            .catch(err => console.log(err))
+            
+        } else {
+            setValidEmail(false)
+        }
+    }
+
+    const handleTickets = () => {
+        let tickets = []
+        let nextId = ticketData.length ? ticketData.at(-1).ticketId + 1 : 1
+        for(let i = 0; i < adultTickets; i++) {
+            tickets.push({ ticketId: nextId, ticketType: "adult" })
+            nextId++
+        }
+        for(let i = 0; i < childTickets; i++) {
+            tickets.push({ ticketId: nextId, ticketType: "child" })
+            nextId++
+        }
+        for(let i = 0; i < studentTickets; i++) {
+            tickets.push({ ticketId: nextId, ticketType: "student" })
+            nextId++
+        }
+        for(let i = 0; i < seniorTickets; i++) {
+            tickets.push({ ticketId: nextId, ticketType: "senior" })
+            nextId++
+        }
+        return(tickets)
+    }
+
+    const validateEmail = () => {
+        try {
+        if(buyersEmail.split('@').length - 1 !== 1 || buyersEmail.split('.').length - 1 !== 1 ) {return false}
+        
+        if(buyersEmail.split(' ').length - 1 !== 0) {return false}
+
+        const parts = [buyersEmail.split('@')[0], buyersEmail.split('@')[1].split('.')[0], buyersEmail.split('@')[1].split('.')[1]]
+        for(let i = 0; i < parts.length; i++) {
+            if(parts[i].length == 0) {
+                return false
+            }
+        }
+        } catch (error) {
+            return false
+        }
+        return true
     }
 
     if(movieData.id){
@@ -193,10 +271,17 @@ export default function movieInfo() {
                     }
                 </div>
                 {totalTickets > 0 && 
-                <div className='ml-1'>
+                <div className='ml-1 flex flex-col'>
                     <p className='poppins-medium text-sm text-(--text-light-color) mt-2'>{totalTickets} tickets selected</p>
-                    <p className='poppins-medium text-lg text-(--text-dark-color) mt-4'>Total ${totalCost}</p>
-                    <button className='cursor-pointer mt-2 bg-white py-3 px-8 poppins-medium text-sm hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>CHECKOUT</button>
+                    <input
+                        className={[' bg-gray-100 rounded py-2 px-2 w-110 poppins-regular text-sm border-1 focus:outline-none', validEmail ? ' border-gray-200' : 'border-red-400'].join(' ')}
+                        type="email"
+                        placeholder="Email address"
+                        value={buyersEmail}
+                        onChange={handleEmailChange}
+                    />
+                    <p className='poppins-medium text-lg text-(--text-dark-color) mt-10'>Total ${totalCost}</p>
+                    <button onClick={handleCheckout} className='cursor-pointer w-fit bg-white py-3 px-8 poppins-medium text-sm hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>CHECKOUT</button>
                 </div>
                 }
 
