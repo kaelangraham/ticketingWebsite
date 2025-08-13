@@ -63,7 +63,6 @@ app.get('/tickets', (req, res) => {
 })
 
 app.post('/order', (req, res) => {
-    console.log(req.body)
     const { movieId, availableTickets, buyerEmail, tickets } = req.body
 
     let sqlAddTickets = ''

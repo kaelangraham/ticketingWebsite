@@ -6,6 +6,7 @@ import Movies from './movies'
 import MovieInfo from './movieInfo'
 import ScrollToTop from './components/scrollToTop'
 import Success from './success'
+import LogIn from './logIn'
 
 
 
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/movies/:movieId" element={<MovieInfo />} />
         <Route path="/success" element={<Success />} />
       </Route>
+      <Route path='/logIn' element={<LogIn />} />
     </Routes>
   </BrowserRouter>
 )

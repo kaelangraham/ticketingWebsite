@@ -5,7 +5,7 @@ import { FilmStripIcon, ClockIcon, VideoCameraIcon, CalendarDotsIcon, StarIcon }
 export default function sidebar() {
     return(
         <div className='w-1/5 p-6 pt-8 fixed flex flex-col gap-15' style={{height: window.innerHeight}}>
-            <NavLink to='/' className='select-none w-4/5'>
+            <NavLink to='/' className='select-none w-45'>
                 <img src={logo} />
             </NavLink>
             
