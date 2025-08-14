@@ -1,20 +1,33 @@
 import logo from './assets/logo.png'
 import { NavLink, useNavigate } from 'react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useCookies, Cookies } from 'react-cookie'
 export default function logIn() {
     let navigate = useNavigate()
-    const logins = [{username: 'kaelan', password: 'password123'}]
+    const logins = [
+        {username: 'kaelan', email: 'kaelan@gmail.com', password: 'password123', access: 'admin'}, 
+        {username: 'sam', email: 'sam@gmail.com', password: 'samiscool', access: 'user'}, 
+    ]
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [inputError, setInputError ] = useState(false)
+    const [cookies, setCookie, removeCookie] = useCookies()
+
+    useEffect(() => {
+        if(cookies.logIn === 'admin') {
+            navigate('/admin')
+        }
+        if(cookies.logIn === 'user') {
+            navigate('/')
+        }
+    }, [cookies])
+
     const handleLogIn = () => {
         for(let i = 0; i < logins.length; i++) {
-            if(username === logins[i].username && password === logins[i].password) {
-                navigate('/')
-            } else {
-                console.log('error')
-                setInputError(true)
+            if(username === logins[i].username || username === logins[i].email && password === logins[i].password) {
+                setCookie('logIn', logins[i].access, {path: '/', maxAge: 3600})
             }
+        setInputError(true)
         }
     }
     const handleEnter = (e) => {

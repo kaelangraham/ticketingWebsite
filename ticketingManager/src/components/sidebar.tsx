@@ -1,8 +1,10 @@
 import logo from '../assets/logo.png'
 import { NavLink } from 'react-router'
 import { FilmStripIcon, ClockIcon, VideoCameraIcon, CalendarDotsIcon, StarIcon } from '@phosphor-icons/react'
+import { Cookies } from 'react-cookie'
 
 export default function sidebar() {
+    const isAdmin = (new Cookies()).get('logIn') === 'admin' ? true : false
     return(
         <div className='w-1/5 p-6 pt-8 fixed flex flex-col gap-15' style={{height: window.innerHeight}}>
             <NavLink to='/' className='select-none w-45'>
@@ -38,6 +40,9 @@ export default function sidebar() {
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Gift Shop</a>
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Functions & Parties</a>
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Accessibility</a>
+                {isAdmin ? (
+                    <NavLink to='/admin' className='w-fit transition duration-300 tracking-tight poppins-regular text-sm !text-red-500'>Admin Section</NavLink>
+                ) : ''}
             </div>
         </div>
     )

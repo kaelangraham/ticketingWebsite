@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
 import { MagnifyingGlassIcon, UserIcon } from '@phosphor-icons/react'
-import { NavLink } from 'react-router'
+import { NavLink, useNavigate } from 'react-router'
+import { Cookies, useCookies } from 'react-cookie'
 
 export default function navbar() {
+    let navigate = useNavigate()
+    const isLoggedIn = (new Cookies()).get('logIn') ? true : false
     const [searchTerm, setSearchTerm] = useState('')
+    const [cookies, setCookie, removeCookie] = useCookies()
 
     useEffect(() => {
         
@@ -15,10 +19,18 @@ export default function navbar() {
     const handleClearSearch = () => {
         setSearchTerm('')
     }
+    const handleLogInClicked = () => {
+        if (isLoggedIn) {
+            removeCookie('logIn')
+            window.location.reload()
+        } else {
+            navigate('/login')
+        }
+    }
 
     return(
         <div className='py-8 flex gap-8'>
-            <div className='relative w-5/6 rounded'>
+            <div className='relative w-26/30 rounded'>
                 <input
                     className='bg-gray-100 rounded py-2 px-12 w-1/1 poppins-regular'
                     type="text"
@@ -29,10 +41,10 @@ export default function navbar() {
                 <MagnifyingGlassIcon weight='bold' size={16} className='absolute left-4 top-[50%] mt-[-8px] pointer-events-none' />
                 <p onClick={handleClearSearch} className='select-none absolute top-[50%] right-4 text-sm mt-[-10px] poppins-medium tracking-tighter text-(--primary-color) cursor-pointer transition duration-300 hover:text-(--text-dark-color)'>Clear</p>
             </div>
-            <NavLink to='/login' className='select-none flex items-center gap-2 cursor-pointer group'>
-                <UserIcon weight='bold' size={24} className='text-(--primary-color) group-hover:text-(--text-dark-color) transition duration-300'/>
-                <p className='font-medium text-(--text-light-color) group-hover:text-(--text-dark-color) transition duration-300'>Staff Log In</p>
-            </NavLink>
+            <div onClick={handleLogInClicked} className='select-none flex items-center gap-2 cursor-pointer group'>
+                <UserIcon weight='bold' size={24} className={['text-(--primary-color) group-hover:text-(--text-dark-color) transition duration-300', isLoggedIn ? 'text-red-500' : ''].join(' ')}/>
+                <p className={['font-medium text-(--text-light-color) group-hover:text-(--text-dark-color) transition duration-300', isLoggedIn ? 'text-red-500' : ''].join(' ')}>{isLoggedIn ? "Log Out" : "Log In"}</p>
+            </div>
         </div>
     )
 }
