@@ -36,6 +36,7 @@ export default function logIn() {
     }
     return(
         <div className='flex flex-col h-screen items-center py-40 relative bg-linear-to-b from-white to-cyan-50'>
+            <title>Log In | Tickets R Us</title>
             <NavLink to='/' className='select-none w-45 absolute top-8 left-6'>
                 <img src={logo} />
             </NavLink>

@@ -41,7 +41,7 @@ export default function sidebar() {
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Functions & Parties</a>
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Accessibility</a>
                 {isAdmin ? (
-                    <NavLink to='/admin' className='w-fit transition duration-300 tracking-tight poppins-regular text-sm !text-red-500'>Admin Section</NavLink>
+                    <a href="#admin" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm !text-red-500'>Admin Section</a>
                 ) : ''}
             </div>
         </div>

@@ -261,10 +261,23 @@ export default function movieInfo() {
             setEditSeniorTicket(false)
         }
     }
+    console.log(movieData)
     
-    if(movieData.id){
+    if(movieData.length === 0){
+        return(
+        <div className="h-screen">
+            <title>404</title>
+            <NavLink to="/" className='flex items-center group'>
+                <CaretLeftIcon size={16} weight='bold' className='text-(--text-light-color) group-hover:text-(--primary-color) transition duration-200 poppins-regular' />
+                <p className='text-(--text-light-color) group-hover:text-(--primary-color) transition duration-200 poppins-regular text-sm'>Back to Homepage</p>
+            </NavLink>
+            <h1 className='poppins-medium text-3xl mt-10'>Whoopsies! 😅</h1>
+            <p className='text-xl poppins-light mt-1'>The page you were looking for cannot be found...</p>
+        </div>
+    )}
     return(
         <div className='mb-50'>
+            <title>{movieData.name + ' | Tickets R Us'}</title>
             <div className='bg-gradient-to-b from-blue-100 to-transparent to-90% h-105 px-6 flex justify-end flex-col gap-4 mr-10 rounded'>
                 <div className='flex gap-6'>
                     <img src={movieData.coverImg} className='h-60 rounded-lg shadow-lg'/>  
@@ -472,16 +485,6 @@ export default function movieInfo() {
 
             </div>
             }
-        </div>
-    )}
-    return(
-        <div className="h-screen">
-            <NavLink to="/" className='flex items-center group'>
-                <CaretLeftIcon size={16} weight='bold' className='text-(--text-light-color) group-hover:text-(--primary-color) transition duration-200 poppins-regular' />
-                <p className='text-(--text-light-color) group-hover:text-(--primary-color) transition duration-200 poppins-regular text-sm'>Back to Homepage</p>
-            </NavLink>
-            <h1 className='poppins-medium text-3xl mt-10'>Whoopsies! 😅</h1>
-            <p className='text-xl poppins-light mt-1'>The page you were looking for cannot be found...</p>
         </div>
     )
 }

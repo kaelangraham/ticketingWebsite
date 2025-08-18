@@ -30,6 +30,7 @@ export default function movies() {
 
     return(
         <>
+        <title>Tickets R Us</title>
         {popUpActive && (
             <div>
             <div onClick={() => popUpActive && setPopUpActive(false)} className='backdrop-blur-xs brightness-25 fixed h-1/1 w-[calc(100%-520px)] top-0 left-0 z-50'/>

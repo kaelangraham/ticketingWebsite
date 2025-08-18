@@ -5,13 +5,15 @@ export default function movieSearchDropdown({searchData, searchTerm, dropdownFoc
         navigate(`/movies/${d.id}`)
         clearSearch()
     }
-
     
-    // if no data doesnt show
+    // if not focused or no data dont show
     if(searchTerm.length === 0 || !dropdownFocused ) return(<></>)
     return(
         <div className='bg-white w-[68vw] rounded mt-[-25px] mx-1 relative p-10 z-30'>
-            {searchData.map((d,i) => (
+            {/* if no results show error */}
+            {searchData.length === 0 ? <p className="poppins-regular tracking-tight">Sorry, we couldn't find any results</p>
+            :
+            searchData.map((d,i) => (
                 <div className='flex py-3 gap-4'>
                     <img onClick={() => handleClick(d)} src={d.coverImg} className="h-30 rounded cursor-pointer hover-dim transition duration-300" />
                     <div className="">
