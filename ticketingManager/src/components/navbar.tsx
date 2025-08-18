@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MagnifyingGlassIcon, UserIcon } from '@phosphor-icons/react'
+import { MagnifyingGlassIcon, UserIcon, SignOutIcon } from '@phosphor-icons/react'
 import { NavLink, useNavigate } from 'react-router'
 import { Cookies, useCookies } from 'react-cookie'
 
@@ -8,10 +8,22 @@ export default function navbar() {
     const isLoggedIn = (new Cookies()).get('logIn') ? true : false
     const [searchTerm, setSearchTerm] = useState('')
     const [cookies, setCookie, removeCookie] = useCookies()
+    const [searchData, setSearchData] = useState([])
 
     useEffect(() => {
-        
+        if(searchTerm.trim()) {
+            fetch(`http://localhost:8081/moviesSearch?searchParam=${searchTerm.trim()}`)
+            .then(res => res.json())
+            .then(data => setSearchData(data))
+            .catch(err => console.log(err))
+        } else {
+            setSearchData([])
+        }
     }, [searchTerm])
+
+    useEffect(() => {
+        console.log(searchData)
+    }, [searchData])
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value)
@@ -42,8 +54,12 @@ export default function navbar() {
                 <p onClick={handleClearSearch} className='select-none absolute top-[50%] right-4 text-sm mt-[-10px] poppins-medium tracking-tighter text-(--primary-color) cursor-pointer transition duration-300 hover:text-(--text-dark-color)'>Clear</p>
             </div>
             <div onClick={handleLogInClicked} className='select-none flex items-center gap-2 cursor-pointer group'>
-                <UserIcon weight='bold' size={24} className={['text-(--primary-color) group-hover:text-(--text-dark-color) transition duration-300', isLoggedIn ? 'text-red-500' : ''].join(' ')}/>
-                <p className={['font-medium text-(--text-light-color) group-hover:text-(--text-dark-color) transition duration-300', isLoggedIn ? 'text-red-500' : ''].join(' ')}>{isLoggedIn ? "Log Out" : "Log In"}</p>
+                { isLoggedIn ? (
+                    <SignOutIcon weight='bold' size={24} className='text-red-400 group-hover:text-red-500 transition duration-300'/>
+                ) : (
+                    <UserIcon weight='bold' size={24} className='text-(--primary-color) group-hover:text-(--text-dark-color) transition duration-300'/>
+                )}
+                <p className='font-medium text-(--text-light-color) group-hover:text-(--text-dark-color) transition duration-300'>{isLoggedIn ? "Log Out" : "Log In"}</p>
             </div>
         </div>
     )

@@ -12,12 +12,11 @@ export default function logIn() {
     const [password, setPassword] = useState('')
     const [inputError, setInputError ] = useState(false)
     const [cookies, setCookie, removeCookie] = useCookies()
+    const [rememberMe, setRememberMe] = useState(false)
 
     useEffect(() => {
-        if(cookies.logIn === 'admin') {
-            navigate('/admin')
-        }
-        if(cookies.logIn === 'user') {
+        if(cookies.logIn) {
+            console.log(rememberMe)
             navigate('/')
         }
     }, [cookies])
@@ -25,7 +24,7 @@ export default function logIn() {
     const handleLogIn = () => {
         for(let i = 0; i < logins.length; i++) {
             if(username === logins[i].username || username === logins[i].email && password === logins[i].password) {
-                setCookie('logIn', logins[i].access, {path: '/', maxAge: 3600})
+                setCookie('logIn', logins[i].access, {path: '/', maxAge: rememberMe? 100000000 : 3600})
             }
         setInputError(true)
         }
@@ -40,9 +39,9 @@ export default function logIn() {
             <NavLink to='/' className='select-none w-45 absolute top-8 left-6'>
                 <img src={logo} />
             </NavLink>
-            <div className="bg-white w-140 border-1 border-gray-300 rounded-xl py-10 px-15">
+            <div className="bg-white w-140 rounded-xl py-10 px-15 flex flex-col items-start shadow-2xl  border-1 border-gray-200">
                 <h1 className='text-3xl poppins-medium mb-10'>Log in</h1>
-                <div className='mb-5'>
+                <div className='mb-5 w-full'>
                     <p className='text-sm poppins-medium mb-2'>Username or Email</p>
                     <input
                         className={['rounded py-2 w-full poppins-regular border-1 border-gray-400 px-2', inputError ? 'border-red-400' : ''].join(' ')}
@@ -51,7 +50,7 @@ export default function logIn() {
                         onInput={event => setUsername(event.target.value)}
                     />
                 </div>
-                <div className={['mb-10', inputError ? '!mb-2' : ''].join(' ')}>
+                <div className='w-full mb-2'>
                     <p className='text-sm poppins-medium mb-2'>Password</p>
                     <input
                         className={['rounded py-2 w-full poppins-regular border-1 border-gray-400 px-2', inputError ? 'border-red-400' : ''].join(' ')}
@@ -60,6 +59,16 @@ export default function logIn() {
                         onInput={event => setPassword(event.target.value)}
                         onKeyDown={handleEnter}
                     />
+                </div>
+                <div className={['w-full flex flex-row gap-2 group', inputError ? 'mb-2' : 'mb-10'].join(' ')}>
+                    <input
+                        className='cursor-pointer'
+                        id='rememberMe'
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={() => setRememberMe(!rememberMe)}
+                    />
+                    <label className='cursor-pointer select-none poppins-regular text-sm mb-[-1px] group-hover:text-(--text-light-color) transition duration-300' htmlFor="rememberMe">Remember Me</label>
                 </div>
                 {inputError ? (
                     <p className='text-red-400 poppins-light text-xs mb-6 h-2'>Your e-mail/password combination is incorrect. Please try again.</p>

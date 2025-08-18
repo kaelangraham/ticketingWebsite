@@ -1,10 +1,14 @@
 import { useParams, NavLink, useNavigate } from 'react-router'
-import { useEffect, useState } from 'react'
-import { PlayIcon, HeartIcon, CaretLeftIcon, PlusIcon, MinusIcon } from '@phosphor-icons/react'
+import { useEffect, useState, useRef } from 'react'
+import { PlayIcon, HeartIcon, CaretLeftIcon, PlusIcon, MinusIcon, TrashIcon, PencilSimpleIcon } from '@phosphor-icons/react'
+import { Cookies } from 'react-cookie'
 
 export default function movieInfo() {
+    const [refresh, refreshData] = useState()
     let navigate = useNavigate()
     let movieId = useParams().movieId
+    const isAdmin = (new Cookies()).get('logIn') === 'admin' ? true : false 
+    const [deletePressed, setDeletePressed] = useState(false)
     const [movieData, setMovieData] = useState([])
     const [ticketData, setTicketData] = useState([])
     const [showingDate, setShowingDate] = useState<Date>(new Date())
@@ -16,11 +20,20 @@ export default function movieInfo() {
     const [childTickets, setChildTickets] = useState(0)
     const [studentTickets, setStudentTickets] = useState(0)
     const [seniorTickets, setSeniorTickets] = useState(0)
+    const [editAdultTicket, setEditAdultTicket] = useState(false)
+    const [editChildTicket, setEditChildTicket] = useState(false)
+    const [editStudentTicket, setEditStudentTicket] = useState(false)
+    const [editSeniorTicket, setEditSeniorTicket] = useState(false)
+    const adultInputRef = useRef<HTMLInputElement>(null)
+    const childInputRef = useRef<HTMLInputElement>(null)
+    const studentInputRef = useRef<HTMLInputElement>(null)
+    const seniorInputRef = useRef<HTMLInputElement>(null)
     const [remainingTickets, setRemainingTickets] = useState(0)
     const [totalTickets, setTotalTickets] = useState(0)
     const [totalCost, setTotalCost] = useState(0)
     const [buyersEmail, setBuyersEmail] = useState('')
     const [validEmail, setValidEmail] = useState(true)
+
 
     useEffect(() => {
         fetch(`http://localhost:8081/movies?movieId=${movieId}`)
@@ -33,7 +46,7 @@ export default function movieInfo() {
         .then(data => {data.length > 0 ? setTicketData(data) : ''})
         .catch(err => console.log(err))
         
-    }, [])
+    }, [refresh])
 
     useEffect(() => {
         if(movieData.id) {
@@ -146,7 +159,109 @@ export default function movieInfo() {
         }
         return true
     }
+    const handleDelete = () => {
+        fetch(`http://localhost:8081/delete?movieId=${movieId}`)
+        .then(res => res.json())
+        .then(data => navigate('/'))
+        .catch(err => console.log(err))
+    }
 
+    const submitAdultTicketEdit = (e) => {
+        if(e.type === 'click' || e.key === 'Enter') {
+            let value = Number(adultInputRef.current?.value).toFixed(2)
+            const pricesData = {
+                movieId: movieId,
+                ticketAdult: value,
+                ticketChild: movieData.ticketChild,
+                ticketStudent: movieData.ticketStudent,
+                ticketSenior: movieData.ticketSenior
+            }
+            fetch('http://localhost:8081/updateTickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pricesData)
+                })
+                .then(res => res.json())
+                .then(data => refreshData(data))
+                .catch(err => console.log(err))
+            setEditAdultTicket(false)
+        }
+    }
+    
+    const submitChildTicketEdit = (e) => {
+        if(e.type === 'click' || e.key === 'Enter') {
+            let value = Number(childInputRef.current?.value).toFixed(2)
+            const pricesData = {
+                movieId: movieId,
+                ticketAdult: movieData.ticketAdult,
+                ticketChild: value,
+                ticketStudent: movieData.ticketStudent,
+                ticketSenior: movieData.ticketSenior
+            }
+            fetch('http://localhost:8081/updateTickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pricesData)
+                })
+                .then(res => res.json())
+                .then(data => refreshData(data))
+                .catch(err => console.log(err))
+            setEditChildTicket(false)
+        }
+    }
+    
+    const submitStudentTicketEdit = (e) => {
+        if(e.type === 'click' || e.key === 'Enter') {
+            let value = Number(studentInputRef.current?.value).toFixed(2)
+            const pricesData = {
+                movieId: movieId,
+                ticketAdult: movieData.ticketAdult,
+                ticketChild: movieData.ticketChild,
+                ticketStudent: value,
+                ticketSenior: movieData.ticketSenior
+            }
+            fetch('http://localhost:8081/updateTickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pricesData)
+                })
+                .then(res => res.json())
+                .then(data => refreshData(data))
+                .catch(err => console.log(err))
+            setEditStudentTicket(false)
+        }   
+    }
+
+    const submitSeniorTicketEdit = (e) => {
+        if(e.type === 'click' || e.key === 'Enter') {
+            let value = Number(seniorInputRef.current?.value).toFixed(2)
+            const pricesData = {
+                movieId: movieId,
+                ticketAdult: movieData.ticketAdult,
+                ticketChild: movieData.ticketChild,
+                ticketStudent: movieData.ticketStudent,
+                ticketSenior: value
+            }
+            fetch('http://localhost:8081/updateTickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pricesData)
+                })
+                .then(res => res.json())
+                .then(data => refreshData(data))
+                .catch(err => console.log(err))
+            setEditSeniorTicket(false)
+        }
+    }
+    
     if(movieData.id){
     return(
         <div className='mb-50'>
@@ -165,6 +280,19 @@ export default function movieInfo() {
                                 <HeartIcon size={26} className='text-(--primary-color)'/>
                                 <p>Watchlist</p>
                             </a>
+                            {isAdmin ? (
+                                !deletePressed ? (
+                            <div onClick={() => setDeletePressed(true)} className='flex items-center gap-1 cursor-pointer group'>
+                                <TrashIcon size={26} className='text-red-400 group-hover:text-red-600 transition duration-300'/>
+                                <p className='text-red-400 group-hover:text-red-600 transition duration-300'>Delete</p>
+                            </div>
+                                ) : (
+                            <div onClick={handleDelete} className='flex items-center gap-1 cursor-pointer group'>
+                                <TrashIcon size={26} className='text-red-400 group-hover:text-red-600 transition duration-300'/>
+                                <p className='text-red-400 group-hover:text-red-600 transition duration-300'>Confirm Delete?</p>
+                            </div>
+                                )
+                            ) : ''}
                         </div>
                     </div>
                 </div>
@@ -196,8 +324,23 @@ export default function movieInfo() {
                 {/* ADULT TICKETS */}
                 <div className='bg-white flex h-16 items-center w-110 px-2 border-1 mt-[-1px] border-gray-100'>
                     <h1 className='poppins-medium text-sm'>Adult</h1>
-                    <p className='ml-auto mr-4 poppins-medium text-sm text-(--text-light-color)'>${movieData.ticketAdult}</p>
-                    {adultTickets == 0 ? 
+                    {isAdmin ? <PencilSimpleIcon onClick={() => setEditAdultTicket(!editAdultTicket)} size={18} className='ml-auto text-blue-400 cursor-pointer hover:text-blue-600'/> : ''}
+                    {editAdultTicket ? (
+                        <input 
+                        ref={adultInputRef}
+                        className='w-14 ml-1 mr-4 px-1 bg-gray-100 poppins-regular text-center rounded border-1 border-gray-200 text-sm text-(--text-light-color)'
+                        type='text'
+                        defaultValue={movieData.ticketAdult}
+                        onKeyDown={submitAdultTicketEdit}
+                        />
+                    ) : (
+                        <p className={['w-12 mr-4 poppins-medium text-sm text-(--text-light-color)', isAdmin ? 'ml-3': 'ml-auto'].join(' ')}>${movieData.ticketAdult}</p>
+                    )}
+
+                    {editAdultTicket ? (
+                        <button onClick={submitAdultTicketEdit} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>CONFIRM</button>
+                    ) : (
+                    adultTickets == 0 ? 
                     <button onClick={() => handleChangeAdultTickets(1)} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>ADD</button>
                     :
                     <div className='w-34 flex items-center justify-center gap-2'>
@@ -210,14 +353,28 @@ export default function movieInfo() {
                         />
                         <div onClick={() => handleChangeAdultTickets(1)} className='border-1 p-0.5 bg-gray-50 rounded-full cursor-pointer'><PlusIcon weight='bold'/></div>
                     </div>
-                    }
+                    )}
                 </div>
 
                 {/* CHILD TICKETS */}
                 <div className='bg-white flex h-16 items-center w-110 px-2 border-1 mt-[-1px] border-gray-100'>
                     <h1 className='poppins-medium text-sm'>Child</h1>
-                    <p className='ml-auto mr-4 poppins-medium text-sm text-(--text-light-color)'>${movieData.ticketChild}</p>
-                    {childTickets == 0 ? 
+                    {isAdmin ? <PencilSimpleIcon onClick={() => setEditChildTicket(!editChildTicket)} size={18} className='ml-auto text-blue-400 cursor-pointer hover:text-blue-600'/> : ''}
+                    {editChildTicket ? (
+                        <input 
+                        ref={childInputRef}
+                        className='w-14 ml-1 mr-4 px-1 bg-gray-100 poppins-regular text-center rounded border-1 border-gray-200 text-sm text-(--text-light-color)'
+                        type='text'
+                        defaultValue={movieData.ticketChild}
+                        onKeyDown={submitChildTicketEdit}
+                        />
+                    ) : (
+                        <p className={['w-12 mr-4 poppins-medium text-sm text-(--text-light-color)', isAdmin ? 'ml-3': 'ml-auto'].join(' ')}>${movieData.ticketChild}</p>
+                    )}
+                    {editChildTicket ? (
+                        <button onClick={submitChildTicketEdit} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>CONFIRM</button>
+                    ) : (
+                    childTickets == 0 ? 
                     <button onClick={() => handleChangeChildTickets(1)} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>ADD</button>
                     :
                     <div className='w-34 flex items-center justify-center gap-2'>
@@ -230,13 +387,27 @@ export default function movieInfo() {
                         />
                         <div onClick={() => handleChangeChildTickets(1)} className='border-1 p-0.5 bg-gray-50 rounded-full cursor-pointer'><PlusIcon weight='bold'/></div>
                     </div>
-                    }
+                    )}
                 </div>
                 {/* STUDENT TICKETS */}
                 <div className='bg-white flex h-16 items-center w-110 px-2 border-1 mt-[-1px] border-gray-100'>
                     <h1 className='poppins-medium text-sm'>Student</h1>
-                    <p className='ml-auto mr-4 poppins-medium text-sm text-(--text-light-color)'>${movieData.ticketStudent}</p>
-                    {studentTickets == 0 ? 
+                    {isAdmin ? <PencilSimpleIcon onClick={() => setEditStudentTicket(!editStudentTicket)} size={18} className='ml-auto text-blue-400 cursor-pointer hover:text-blue-600'/> : ''}
+                    {editStudentTicket ? (
+                        <input 
+                        ref={studentInputRef}
+                        className='w-14 ml-1 mr-4 px-1 bg-gray-100 poppins-regular text-center rounded border-1 border-gray-200 text-sm text-(--text-light-color)'
+                        type='text'
+                        defaultValue={movieData.ticketStudent}
+                        onKeyDown={submitStudentTicketEdit}
+                        />
+                    ) : (
+                        <p className={['w-12 mr-4 poppins-medium text-sm text-(--text-light-color)', isAdmin ? 'ml-3': 'ml-auto'].join(' ')}>${movieData.ticketStudent}</p>
+                    )}
+                    {editStudentTicket ? (
+                        <button onClick={submitStudentTicketEdit} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>CONFIRM</button>
+                    ) : (
+                    studentTickets == 0 ? 
                     <button onClick={() => handleChangeStudentTickets(1)} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>ADD</button>
                     :
                     <div className='w-34 flex items-center justify-center gap-2'>
@@ -249,13 +420,27 @@ export default function movieInfo() {
                         />
                         <div onClick={() => handleChangeStudentTickets(1)} className='border-1 p-0.5 bg-gray-50 rounded-full cursor-pointer'><PlusIcon weight='bold'/></div>
                     </div>
-                    }
+                    )}
                 </div>
                 {/* SENIOR TICKETS */}
                 <div className='bg-white flex h-16 items-center w-110 px-2 border-1 mt-[-1px] border-gray-100'>
                     <h1 className='poppins-medium text-sm'>Senior</h1>
-                    <p className='ml-auto mr-4 poppins-medium text-sm text-(--text-light-color)'>${movieData.ticketSenior}</p>
-                    {seniorTickets == 0 ? 
+                    {isAdmin ? <PencilSimpleIcon onClick={() => setEditSeniorTicket(!editSeniorTicket)} size={18} className='ml-auto text-blue-400 cursor-pointer hover:text-blue-600'/> : ''}
+                    {editSeniorTicket ? (
+                        <input 
+                        ref={seniorInputRef}
+                        className='w-14 ml-1 mr-4 px-1 bg-gray-100 poppins-regular text-center rounded border-1 border-gray-200 text-sm text-(--text-light-color)'
+                        type='text'
+                        defaultValue={movieData.ticketSenior}
+                        onKeyDown={submitSeniorTicketEdit}
+                        />
+                    ) : (
+                        <p className={['w-12 mr-4 poppins-medium text-sm text-(--text-light-color)', isAdmin ? 'ml-3': 'ml-auto'].join(' ')}>${movieData.ticketSenior}</p>
+                    )}
+                    {editSeniorTicket ? (
+                        <button onClick={submitSeniorTicketEdit} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>CONFIRM</button>
+                    ) : (
+                    seniorTickets == 0 ? 
                     <button onClick={() => handleChangeSeniorTickets(1)} className='cursor-pointer bg-gray-200 py-2 w-34 poppins-medium hover:border-blue-200 transition duration-300 rounded border-1 border-gray-100'>ADD</button>
                     :
                     <div className='w-34 flex items-center justify-center gap-2'>
@@ -268,7 +453,7 @@ export default function movieInfo() {
                         />
                         <div onClick={() => handleChangeSeniorTickets(1)} className='border-1 p-0.5 bg-gray-50 rounded-full cursor-pointer'><PlusIcon weight='bold'/></div>
                     </div>
-                    }
+                    )}
                 </div>
                 {totalTickets > 0 && 
                 <div className='ml-1 flex flex-col'>

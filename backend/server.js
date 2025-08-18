@@ -51,11 +51,51 @@ app.get('/movies', (req, res) => {
     })
 })
 
+app.get('/moviesSearch', (req, res) => {
+    const searchParam = req.query.searchParam
+    const sql = `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
+                 FROM movies m
+                 JOIN theatres ON theatreId = theatres.id
+                 WHERE m.name LIKE '%${searchParam}%'
+                 OR m.description LIKE '%${searchParam}%'
+                 ORDER BY
+                 CASE
+                 WHEN m.name LIKE '%${searchParam}%' THEN 1
+                 WHEN m.description LIKE '%${searchParam}%' THEN 2
+                 END
+                 LIMIT 4;`
+    db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
+
 app.get('/tickets', (req, res) => {
     const movieId = req.query.movieId 
     const sql = `SELECT *
                  FROM tickets
                  WHERE movieId = ${movieId};`
+    db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
+
+app.post('/updateTickets', (req, res) => {
+    const { movieId, ticketAdult, ticketChild, ticketStudent, ticketSenior } = req.body
+    const sql = `UPDATE movies 
+                 SET ticketAdult=${ticketAdult}, ticketChild=${ticketChild}, ticketStudent=${ticketStudent}, ticketSenior=${ticketSenior}
+                 WHERE id = ${movieId}`
+    db.query(sql, (err, data) => {
+        if(err) return res.json(err);
+        return res.json(data)
+    })
+})
+
+app.get('/delete', (req, res) => {
+    const movieId = req.query.movieId
+    const sql = `DELETE FROM movies
+                 WHERE id = ${movieId}`
     db.query(sql, (err, data) => {
         if(err) return res.json(err);
         return res.json(data)
