@@ -1,8 +1,10 @@
 import { useParams, NavLink, useNavigate } from 'react-router'
 import React, { useEffect, useState, useRef } from 'react'
+// icons import
 import { PlayIcon, HeartIcon, CaretLeftIcon, PlusIcon, MinusIcon, TrashIcon, PencilSimpleIcon } from '@phosphor-icons/react'
 import { Cookies } from 'react-cookie'
 
+// type declerations
 interface movieData {
     id: number
     coverImg: string
@@ -30,33 +32,38 @@ export default function movieInfo() {
     let navigate = useNavigate()
     let movieId = useParams().movieId
     const isAdmin = (new Cookies()).get('logIn') === 'admin' ? true : false 
-    const [deletePressed, setDeletePressed] = useState<boolean>(false)
     const [movieData, setMovieData] = useState<movieData>()
     const [ticketData, setTicketData] = useState<ticketData[]>([])
     const [showingDate, setShowingDate] = useState<Date>(new Date())
+    // days/months for nice display formatting
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const months = ['Janurary', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     const [showingTime, setShowingTime] = useState<string>('')
     const [selectedShowing, setSelectedShowing] = useState<number>()
+    // number of each tickets ordered
     const [adultTickets, setAdultTickets] = useState<number>(0)
     const [childTickets, setChildTickets] = useState<number>(0)
     const [studentTickets, setStudentTickets] = useState<number>(0)
     const [seniorTickets, setSeniorTickets] = useState<number>(0)
+    // for adming editing
+    const [deletePressed, setDeletePressed] = useState<boolean>(false)
     const [editAdultTicket, setEditAdultTicket] = useState<boolean>(false)
     const [editChildTicket, setEditChildTicket] = useState<boolean>(false)
     const [editStudentTicket, setEditStudentTicket] = useState<boolean>(false)
     const [editSeniorTicket, setEditSeniorTicket] = useState<boolean>(false)
+    // value references (admin editing)
     const adultInputRef = useRef<HTMLInputElement>(null)
     const childInputRef = useRef<HTMLInputElement>(null)
     const studentInputRef = useRef<HTMLInputElement>(null)
     const seniorInputRef = useRef<HTMLInputElement>(null)
+    // ticket ordering variables
     const [remainingTickets, setRemainingTickets] = useState<number>(0)
     const [totalTickets, setTotalTickets] = useState<number>(0)
     const [totalCost, setTotalCost] = useState<string>('')
     const [buyersEmail, setBuyersEmail] = useState<string>('')
     const [validEmail, setValidEmail] = useState<boolean>(true)
 
-
+    // database query on 'refresh' and change in movieId - /movies/id (fix for searchbar)
     useEffect(() => {
         fetch(`http://localhost:8081/movies?movieId=${movieId}`)
         .then(res => res.json())
@@ -70,6 +77,7 @@ export default function movieInfo() {
         
     }, [refresh, movieId])
 
+    // data and time formating
     useEffect(() => {
         if(movieData) {
             let date = new Date(movieData.showingDate)
@@ -79,6 +87,7 @@ export default function movieInfo() {
         }
     }, [movieData])
 
+    // ticket ordering
     useEffect(() => {
         if(movieData) {
             setRemainingTickets(movieData.availableTickets - adultTickets - childTickets - studentTickets - seniorTickets)
@@ -91,6 +100,7 @@ export default function movieInfo() {
         setSelectedShowing(id)
     }
 
+    // change in tickets updater
     const handleChangeAdultTickets = (change: number) => {
         if(remainingTickets - change >= 0) {
         setAdultTickets(curr => curr + change)
@@ -111,13 +121,18 @@ export default function movieInfo() {
         setSeniorTickets(curr => curr + change)
         }
     }
+    // sets email input as a variable for validating + db
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setBuyersEmail(event.target.value)
     }
+    
     const handleCheckout = () => {
+        // checks if email is valid
         if(validateEmail()) {
             setValidEmail(true)
+            // gets list of ordered tickets
             const tickets = handleTickets()
+            // sets post query
             const ticketData = {
                 movieId: movieId,
                 availableTickets: remainingTickets,
@@ -133,17 +148,20 @@ export default function movieInfo() {
                 body: JSON.stringify(ticketData)
             })
             .then(res => res.json())
+            // navigate to success page if successful
             .then(data => navigate('/success'))
             .catch(err => console.log(err))
-            
         } else {
             setValidEmail(false)
         }
     }
 
+    // creates list of ordered tickets
     const handleTickets = () => {
         let tickets = []
+        // finds next id of selected showing
         let nextId =  (ticketData.at(-1)?.ticketId ?? 0) + 1
+        // filters through each selected ticket and adds to list with id and type
         for(let i = 0; i < adultTickets; i++) {
             tickets.push({ ticketId: nextId, ticketType: "adult" })
             nextId++
@@ -163,13 +181,16 @@ export default function movieInfo() {
         return(tickets)
     }
 
+    // checks if email is valid
     const validateEmail = () => {
         try {
+        // checks if email has 1 '@' and 1 '.'
         if(buyersEmail.split('@').length - 1 !== 1 || buyersEmail.split('.').length - 1 !== 1 ) {return false}
-        
+        // checks if email has empty space 
         if(buyersEmail.split(' ').length - 1 !== 0) {return false}
-
+        // splits into three parts, part1@part2.part3
         const parts = [buyersEmail.split('@')[0], buyersEmail.split('@')[1].split('.')[0], buyersEmail.split('@')[1].split('.')[1]]
+        // checks if each part has a length of 0
         for(let i = 0; i < parts.length; i++) {
             if(parts[i].length == 0) {
                 return false
@@ -180,21 +201,26 @@ export default function movieInfo() {
         }
         return true
     }
+    // deletes movie from db
     const handleDelete = () => {
         fetch(`http://localhost:8081/delete?movieId=${movieId}`)
         .then(res => res.json())
         .then(data => navigate('/'))
         .catch(err => console.log(err))
     }
-
+    
+    // ADULT
     const submitAdultTicketEdit = (
         e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
+        // checks if input is a click (from button) or enter keypress (from textbox)
         if (
             e.type === 'click' ||
             (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
         ) {
+            // sets input to 2dp (0.00)
             let value = Number(adultInputRef.current?.value).toFixed(2)
+            // gets data ready for post
             const pricesData = {
                 movieId: movieId,
                 ticketAdult: value,
@@ -202,6 +228,7 @@ export default function movieInfo() {
                 ticketStudent: movieData?.ticketStudent,
                 ticketSenior: movieData?.ticketSenior
             }
+            // updates ticket price from db
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
                     headers: {
@@ -210,20 +237,25 @@ export default function movieInfo() {
                     body: JSON.stringify(pricesData)
                 })
                 .then(res => res.json())
+                // changes refreshData useState to quickly refresh page (without actually refreshing)
                 .then(data => refreshData(data))
                 .catch(err => console.log(err))
             setEditAdultTicket(false)
         }
     }
-    
+
+    // CHILD
     const submitChildTicketEdit = (
         e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
+        // checks if input is a click (from button) or enter keypress (from textbox)
         if (
             e.type === 'click' ||
             (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
         ) {
+            // sets input to 2dp (0.00)
             let value = Number(childInputRef.current?.value).toFixed(2)
+            // gets data ready for post
             const pricesData = {
                 movieId: movieId,
                 ticketAdult: movieData?.ticketAdult,
@@ -231,6 +263,7 @@ export default function movieInfo() {
                 ticketStudent: movieData?.ticketStudent,
                 ticketSenior: movieData?.ticketSenior
             }
+            // updates ticket price from db
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
                     headers: {
@@ -239,20 +272,25 @@ export default function movieInfo() {
                     body: JSON.stringify(pricesData)
                 })
                 .then(res => res.json())
+                // changes refreshData useState to quickly refresh page (without actually refreshing)
                 .then(data => refreshData(data))
                 .catch(err => console.log(err))
             setEditChildTicket(false)
         }
     }
-    
+
+    // STUDENT
     const submitStudentTicketEdit = (
         e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
+        // checks if input is a click (from button) or enter keypress (from textbox)
         if (
             e.type === 'click' ||
             (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
         ) {
+            // sets input to 2dp (0.00)
             let value = Number(studentInputRef.current?.value).toFixed(2)
+            // gets data ready for post
             const pricesData = {
                 movieId: movieId,
                 ticketAdult: movieData?.ticketAdult,
@@ -260,6 +298,7 @@ export default function movieInfo() {
                 ticketStudent: value,
                 ticketSenior: movieData?.ticketSenior
             }
+            // updates ticket price from db
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
                     headers: {
@@ -268,20 +307,25 @@ export default function movieInfo() {
                     body: JSON.stringify(pricesData)
                 })
                 .then(res => res.json())
+                // changes refreshData useState to quickly refresh page (without actually refreshing)
                 .then(data => refreshData(data))
                 .catch(err => console.log(err))
             setEditStudentTicket(false)
         }   
     }
-
+    
+    // SENIOR
     const submitSeniorTicketEdit = (
         e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
+        // checks if input is a click (from button) or enter keypress (from textbox)
         if (
             e.type === 'click' ||
             (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
         ) {
+            // sets input to 2dp (0.00)
             let value = Number(seniorInputRef.current?.value).toFixed(2)
+            // gets data ready for post
             const pricesData = {
                 movieId: movieId,
                 ticketAdult: movieData?.ticketAdult,
@@ -289,6 +333,7 @@ export default function movieInfo() {
                 ticketStudent: movieData?.ticketStudent,
                 ticketSenior: value
             }
+            // updates ticket price from db
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
                     headers: {
@@ -297,13 +342,14 @@ export default function movieInfo() {
                     body: JSON.stringify(pricesData)
                 })
                 .then(res => res.json())
+                // changes refreshData useState to quickly refresh page (without actually refreshing)
                 .then(data => refreshData(data))
                 .catch(err => console.log(err))
             setEditSeniorTicket(false)
         }
     }
-    console.log(movieData)
     
+    // if no data show error
     if(!movieData){
         return(
         <div className="h-screen">
@@ -318,6 +364,7 @@ export default function movieInfo() {
     )}
     return(
         <div className='mb-50'>
+            {/* movie info */}
             <title>{movieData.name + ' | Tickets R Us'}</title>
             <div className='bg-gradient-to-b from-blue-100 to-transparent to-90% h-105 px-6 flex justify-end flex-col gap-4 mr-10 rounded'>
                 <div className='flex gap-6'>
@@ -334,7 +381,8 @@ export default function movieInfo() {
                                 <HeartIcon size={26} className='text-(--primary-color)'/>
                                 <p>Watchlist</p>
                             </a>
-                            {isAdmin ? (
+                            {// movie delete option if admin
+                            isAdmin ? (
                                 !deletePressed ? (
                             <div onClick={() => setDeletePressed(true)} className='flex items-center gap-1 cursor-pointer group'>
                                 <TrashIcon size={26} className='text-red-400 group-hover:text-red-600 transition duration-300'/>
@@ -359,7 +407,7 @@ export default function movieInfo() {
                 <p className='poppins-light text-xs pt-1 tracking-tight'>{[days[showingDate.getDay()], showingDate.getDate(), months[showingDate.getMonth()]].join(' ')}</p>
             </div>
 
-
+            {/* showing info */}
             <div onClick={() => handleSelectShowing(0)} className={['mx-6 h-20 w-90 bg-(--primary-color) rounded pl-1 group mt-4 cursor-pointer border-1 border-white', selectedShowing == 0 && '!border-blue-400'].join(' ')}>
                 <div className={['bg-white h-7/10 pl-2 pt-1 group-hover:bg-gray-50 rounded-tr-xs transition duration-300', selectedShowing == 0 && '!bg-gray-50'].join(' ')}>
                     <h1 className='poppins-medium'>{showingTime}</h1>
@@ -371,7 +419,8 @@ export default function movieInfo() {
                 </div>
             </div>
 
-            {selectedShowing !== undefined && 
+            {// checks if a showing is selected
+            selectedShowing !== undefined && 
             <div className='mx-6 mt-10'>
                 <h1 className='poppins-medium text-xl pt-8'>Add Tickets</h1>
                 <p className='poppins-light text-sm tracking-tight mb-4'>Available: {remainingTickets} / {movieData.totalTickets}</p>
@@ -509,6 +558,7 @@ export default function movieInfo() {
                     </div>
                     )}
                 </div>
+                {/* checkout summary */}
                 {totalTickets > 0 && 
                 <div className='ml-1 flex flex-col'>
                     <p className='poppins-medium text-sm text-(--text-light-color) mt-2'>{totalTickets} tickets selected</p>

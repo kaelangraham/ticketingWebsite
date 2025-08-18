@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
+// icons import
 import { ClockIcon, HeartIcon, PlayIcon, SlidersHorizontalIcon, ArrowsDownUpIcon, SquaresFourIcon, RowsIcon } from "@phosphor-icons/react"
 import GenresPopUp from './components/genreFiltersPopUp'
+// main images
 import lrgImg1 from './assets/sorryBabyLrg.jpg'
 import lrgImg2 from './assets/deepCoverLrg.jpg'
 import { NavLink } from 'react-router'
 
+// type declaration
 interface movieData {
     id: number
     coverImg: string
@@ -15,13 +18,15 @@ interface movieData {
 }
 
 export default function movies() {
-    const [moviesData, setMoviesData] = useState([])
-    const [displayList, setDisplayList] = useState(true)
+    const [moviesData, setMoviesData] = useState<movieData>()
+    const [displayList, setDisplayList] = useState<boolean>(true)
+    // displayed types and matching query types
     const sortingTypesList = ['None', 'A-Z', 'Runtime', 'Release Date']
     const queryTypesList = ['id', 'name', 'runtime', 'releaseDate']
-    const [sortingType, setSortingType] = useState(sortingTypesList[0])
-    const [popUpActive, setPopUpActive] = useState(false)
+    const [sortingType, setSortingType] = useState<string>(sortingTypesList[0])
+    const [popUpActive, setPopUpActive] = useState<boolean>(false)
 
+    // database query on sorting type change
     useEffect(() => {
         const queryType = queryTypesList[sortingTypesList.indexOf(sortingType)]
         fetch(`http://localhost:8081/movies?sortType=${queryType}`)
@@ -33,13 +38,13 @@ export default function movies() {
     const handleChangeSortType = () => {
         const currentIndex = sortingTypesList.indexOf(sortingType)
         const nextIndex = currentIndex == sortingTypesList.length - 1 ? 0 : currentIndex + 1
-        console.log(currentIndex, sortingTypesList.length)
         setSortingType(sortingTypesList[nextIndex])
     }
 
     return(
         <>
         <title>Tickets R Us</title>
+        {/* genre search popup */}
         {popUpActive && (
             <div>
             <div onClick={() => popUpActive && setPopUpActive(false)} className='backdrop-blur-xs brightness-25 fixed h-1/1 w-[calc(100%-520px)] top-0 left-0 z-50'/>
@@ -71,11 +76,12 @@ export default function movies() {
 
         </div>
 
-        {moviesData.length > 0 ?
-        
+        {moviesData && moviesData.length > 0 ?
+        //list display
         displayList ? (
         <div className='flex flex-col gap-10 pb-20'>
-            {moviesData.map((d: movieData) => (
+            {moviesData?.map((d: movieData) => (
+                // movie displayinfo
                 <div className='flex items-end w-210'>
                     <NavLink to={`/movies/${d.id}`} className='shrink-0'>
                         <img src={d.coverImg} className='h-60 rounded-lg cursor-pointer hover-dim transition duration-300'/>
@@ -105,8 +111,10 @@ export default function movies() {
             ))}
         </div>
         ) : (
+            // grid display
         <div className='grid grid-cols-4 w-210 gap-12 pb-20'>
-            {moviesData.map((d: movieData) => (
+            {moviesData?.map((d: movieData) => (
+                // movie dipslay info
                 <div className='text-pretty flex flex-col gap-2'>
                     <NavLink to={`/movies/${d.id}`}>
                         <img src={d.coverImg} className='w-1/1 rounded-lg cursor-pointer hover-dim transition duration-300'/>
@@ -123,11 +131,11 @@ export default function movies() {
             ))}
 
         </div>
-        ): (
-            <div className='pb-20 pointer-events-none select-none'>
-                <h1 className='poppins-medium text-2xl'>Our server is down!</h1>
-                <p className='poppins-light text-sm'>Try again in a few minutes...</p>
-            </div>
+        ) : (
+        <div className='pb-20 pointer-events-none select-none'>
+            <h1 className='poppins-medium text-2xl'>Our server is down!</h1>
+            <p className='poppins-light text-sm'>Try again in a few minutes...</p>
+        </div>
         )}
         </>
     )

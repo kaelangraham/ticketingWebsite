@@ -9,9 +9,6 @@ import ScrollToTop from './components/scrollToTop'
 import Success from './success'
 import LogIn from './logIn'
 
-
-
-
 createRoot(document.getElementById('root')!).render(
   <CookiesProvider defaultSetOptions={{path: '/'}}>
   <BrowserRouter>

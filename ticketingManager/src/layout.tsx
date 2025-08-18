@@ -10,6 +10,7 @@ export default function layout() {
         <div className='bg-linear-to-b from-white to-cyan-50 to-[100vh]'>
             <div className='pl-[20%]'>
                 <Navbar />
+                {/* main content */}
                 <Outlet />
             </div>
             <Footer /> 

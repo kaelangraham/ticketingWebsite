@@ -3,12 +3,15 @@ import { useEffect } from 'react'
 
 export default function success() {
     let navigate = useNavigate()
+    // auto navigates after 5000ms (5s)
     useEffect(() => {
         const timer = setTimeout(() => {
             navigate('/')
         }, 5000)
+        // clears timer
         return () => clearTimeout(timer)
     }, [])
+    
     return(
         <div className='h-screen'>
             <title>Payment Confirmed!</title>

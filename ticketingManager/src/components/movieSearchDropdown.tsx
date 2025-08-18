@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router"
 
+// type declearations
 interface movieParams {
     coverImg: string
     name: string
@@ -14,8 +15,10 @@ interface movieSearchParams {
     clearSearch: () => void
 }
 
+// var + function imports
 export default function movieSearchDropdown({searchData, searchTerm, dropdownFocused, clearSearch}: movieSearchParams) {
     let navigate = useNavigate()
+    // on result click
     const handleClick = (d: movieParams) => {
         navigate(`/movies/${d.id}`)
         clearSearch()
@@ -25,9 +28,10 @@ export default function movieSearchDropdown({searchData, searchTerm, dropdownFoc
     if(searchTerm.length === 0 || !dropdownFocused ) return(<></>)
     return(
         <div className='bg-white w-[68vw] rounded mt-[-25px] mx-1 relative p-10 z-30'>
-            {/* if no results show error */}
-            {searchData.length === 0 ? <p className="poppins-regular tracking-tight">Sorry, we couldn't find any results</p>
+            {// if no results show error
+            searchData.length === 0 ? <p className="poppins-regular tracking-tight">Sorry, we couldn't find any results</p>
             :
+            // display results
             searchData.map(d => (
                 <div className='flex py-3 gap-4'>
                     <img onClick={() => handleClick(d)} src={d.coverImg} className="h-30 rounded cursor-pointer hover-dim transition duration-300" />

@@ -2,33 +2,39 @@ import logo from './assets/logo.png'
 import { NavLink, useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
 import { useCookies } from 'react-cookie'
+
 export default function logIn() {
     let navigate = useNavigate()
+
     const logins = [
         {username: 'kaelan', email: 'kaelan@gmail.com', password: 'password123', access: 'admin'}, 
         {username: 'sam', email: 'sam@gmail.com', password: 'samiscool', access: 'user'}, 
     ]
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [inputError, setInputError ] = useState(false)
-    const [cookies, setCookie, removeCookie] = useCookies()
-    const [rememberMe, setRememberMe] = useState(false)
 
+    const [username, setUsername] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [inputError, setInputError ] = useState<boolean>(false)
+    const [rememberMe, setRememberMe] = useState<boolean>(false)
+    const [cookies, setCookie, removeCookie] = useCookies()
+
+    // redirects user if already logged in
     useEffect(() => {
         if(cookies.logIn) {
-            console.log(rememberMe)
             navigate('/')
         }
     }, [cookies])
 
     const handleLogIn = () => {
+        // checks if username/email and password match a login
         for(let i = 0; i < logins.length; i++) {
             if(username === logins[i].username || username === logins[i].email && password === logins[i].password) {
-                setCookie('logIn', logins[i].access, {path: '/', maxAge: rememberMe? 100000000 : 3600})
+                setCookie('logIn', logins[i].access, {path: '/', maxAge: rememberMe ? 100000000 : 3600})
             }
+        // if no matches displays error
         setInputError(true)
         }
     }
+    // allows enter on password input to submit login
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if(e.key === 'Enter') {
             handleLogIn()
@@ -44,6 +50,7 @@ export default function logIn() {
                 <h1 className='text-3xl poppins-medium mb-10'>Log in</h1>
                 <div className='mb-5 w-full'>
                     <p className='text-sm poppins-medium mb-2'>Username or Email</p>
+                    {/* username/email input */}
                     <input
                         className={['rounded py-2 w-full poppins-regular border-1 border-gray-400 px-2', inputError ? 'border-red-400' : ''].join(' ')}
                         type="text"
@@ -53,6 +60,7 @@ export default function logIn() {
                 </div>
                 <div className='w-full mb-2'>
                     <p className='text-sm poppins-medium mb-2'>Password</p>
+                    {/* password input */}
                     <input
                         className={['rounded py-2 w-full poppins-regular border-1 border-gray-400 px-2', inputError ? 'border-red-400' : ''].join(' ')}
                         type="password"
@@ -62,6 +70,7 @@ export default function logIn() {
                     />
                 </div>
                 <div className={['w-full flex flex-row gap-2 group', inputError ? 'mb-2' : 'mb-10'].join(' ')}>
+                    {/* remember me checkbox */}
                     <input
                         className='cursor-pointer'
                         id='rememberMe'
@@ -71,9 +80,11 @@ export default function logIn() {
                     />
                     <label className='cursor-pointer select-none poppins-regular text-sm mb-[-1px] group-hover:text-(--text-light-color) transition duration-300' htmlFor="rememberMe">Remember Me</label>
                 </div>
+                {/* error */}
                 {inputError ? (
                     <p className='text-red-400 poppins-light text-xs mb-6 h-2'>Your e-mail/password combination is incorrect. Please try again.</p>
                 ) : ''}
+                {/* login submit */}
                 <button onClick={handleLogIn} className='cursor-pointer bg-cyan-600 py-2 px-8 rounded-3xl text-white poppins-regular text-sm hover:bg-cyan-700 transition duration-300'>Log in</button>
             </div>
         </div>

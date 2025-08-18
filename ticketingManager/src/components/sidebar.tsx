@@ -1,16 +1,21 @@
+// TicketsRUs logo import
 import logo from '../assets/logo.png'
 import { NavLink } from 'react-router'
+// icons import
 import { FilmStripIcon, ClockIcon, VideoCameraIcon, CalendarDotsIcon, StarIcon } from '@phosphor-icons/react'
 import { Cookies } from 'react-cookie'
 
 export default function sidebar() {
+    // checks if admin user
     const isAdmin = (new Cookies()).get('logIn') === 'admin' ? true : false
     return(
-        <div className='w-1/5 p-6 pt-8 fixed flex flex-col gap-15' style={{height: window.innerHeight}}>
+        <div className='w-1/5 p-6 pt-8 fixed flex flex-col gap-15 h-full'>
+            {/* navigate to homepage */}
             <NavLink to='/' className='select-none w-45'>
                 <img src={logo} />
             </NavLink>
             
+            {/* main buttons */}
             <div className='flex flex-col gap-6 pl-2'>
                 <NavLink to='/' className='flex items-center gap-3 w-fit transition duration-300 tracking-tight'>
                     <FilmStripIcon size={26} width={26} />
@@ -33,6 +38,7 @@ export default function sidebar() {
                     <h1 className='poppins-medium'>Tickets'R'Us Rewards</h1>
                 </a>
             </div>
+            {/* sub buttons */}
             <div className='flex flex-col gap-4 pl-2'>
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Offers & Promotions</a>
                 <a href="#" className='w-fit transition duration-300 tracking-tight poppins-regular text-sm'>Experiences</a>
