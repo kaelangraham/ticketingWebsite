@@ -46,7 +46,7 @@ export default function movieInfo() {
         .then(data => {data.length > 0 ? setTicketData(data) : ''})
         .catch(err => console.log(err))
         
-    }, [refresh])
+    }, [refresh, movieId])
 
     useEffect(() => {
         if(movieData.id) {
