@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { MagnifyingGlassIcon, UserIcon, SignOutIcon, Drop } from '@phosphor-icons/react'
-import { NavLink, useNavigate } from 'react-router'
+import { MagnifyingGlassIcon, UserIcon, SignOutIcon } from '@phosphor-icons/react'
+import { useNavigate } from 'react-router'
 import { Cookies, useCookies } from 'react-cookie'
 import Dropdown from './movieSearchDropdown'
 
@@ -23,7 +23,7 @@ export default function navbar() {
         }
     }, [searchTerm])
 
-    const handleSearchChange = (event) => {
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value)
     }
     const handleClearSearch = () => {

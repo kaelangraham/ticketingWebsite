@@ -1,38 +1,60 @@
 import { useParams, NavLink, useNavigate } from 'react-router'
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { PlayIcon, HeartIcon, CaretLeftIcon, PlusIcon, MinusIcon, TrashIcon, PencilSimpleIcon } from '@phosphor-icons/react'
 import { Cookies } from 'react-cookie'
 
+interface movieData {
+    id: number
+    coverImg: string
+    name: string
+    description: string
+    runtime: string
+    releaseDate: number
+    showingDate: Date
+    showingTime: string
+    availableTickets: number
+    ticketAdult: number
+    ticketChild: number
+    ticketStudent: number
+    ticketSenior: number
+    theatreName: string
+    totalTickets: number
+}
+interface ticketData {
+    ticketId: number
+    ticketType: string
+}
+
 export default function movieInfo() {
-    const [refresh, refreshData] = useState()
+    const [refresh, refreshData] = useState<any>()
     let navigate = useNavigate()
     let movieId = useParams().movieId
     const isAdmin = (new Cookies()).get('logIn') === 'admin' ? true : false 
-    const [deletePressed, setDeletePressed] = useState(false)
-    const [movieData, setMovieData] = useState([])
-    const [ticketData, setTicketData] = useState([])
+    const [deletePressed, setDeletePressed] = useState<boolean>(false)
+    const [movieData, setMovieData] = useState<movieData>()
+    const [ticketData, setTicketData] = useState<ticketData[]>([])
     const [showingDate, setShowingDate] = useState<Date>(new Date())
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const months = ['Janurary', 'Feburary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    const [showingTime, setShowingTime] = useState('')
-    const [selectedShowing, setSelectedShowing] = useState()
-    const [adultTickets, setAdultTickets] = useState(0)
-    const [childTickets, setChildTickets] = useState(0)
-    const [studentTickets, setStudentTickets] = useState(0)
-    const [seniorTickets, setSeniorTickets] = useState(0)
-    const [editAdultTicket, setEditAdultTicket] = useState(false)
-    const [editChildTicket, setEditChildTicket] = useState(false)
-    const [editStudentTicket, setEditStudentTicket] = useState(false)
-    const [editSeniorTicket, setEditSeniorTicket] = useState(false)
+    const [showingTime, setShowingTime] = useState<string>('')
+    const [selectedShowing, setSelectedShowing] = useState<number>()
+    const [adultTickets, setAdultTickets] = useState<number>(0)
+    const [childTickets, setChildTickets] = useState<number>(0)
+    const [studentTickets, setStudentTickets] = useState<number>(0)
+    const [seniorTickets, setSeniorTickets] = useState<number>(0)
+    const [editAdultTicket, setEditAdultTicket] = useState<boolean>(false)
+    const [editChildTicket, setEditChildTicket] = useState<boolean>(false)
+    const [editStudentTicket, setEditStudentTicket] = useState<boolean>(false)
+    const [editSeniorTicket, setEditSeniorTicket] = useState<boolean>(false)
     const adultInputRef = useRef<HTMLInputElement>(null)
     const childInputRef = useRef<HTMLInputElement>(null)
     const studentInputRef = useRef<HTMLInputElement>(null)
     const seniorInputRef = useRef<HTMLInputElement>(null)
-    const [remainingTickets, setRemainingTickets] = useState(0)
-    const [totalTickets, setTotalTickets] = useState(0)
-    const [totalCost, setTotalCost] = useState(0)
-    const [buyersEmail, setBuyersEmail] = useState('')
-    const [validEmail, setValidEmail] = useState(true)
+    const [remainingTickets, setRemainingTickets] = useState<number>(0)
+    const [totalTickets, setTotalTickets] = useState<number>(0)
+    const [totalCost, setTotalCost] = useState<string>('')
+    const [buyersEmail, setBuyersEmail] = useState<string>('')
+    const [validEmail, setValidEmail] = useState<boolean>(true)
 
 
     useEffect(() => {
@@ -49,7 +71,7 @@ export default function movieInfo() {
     }, [refresh, movieId])
 
     useEffect(() => {
-        if(movieData.id) {
+        if(movieData) {
             let date = new Date(movieData.showingDate)
             setShowingDate(date)
             let time = new Date('2025-01-01T' + movieData.showingTime + 'Z').toLocaleTimeString('en-US', {timeZone:'UTC', hour:'numeric', minute:'numeric'})
@@ -58,39 +80,38 @@ export default function movieInfo() {
     }, [movieData])
 
     useEffect(() => {
-        if(movieData.id) {
+        if(movieData) {
             setRemainingTickets(movieData.availableTickets - adultTickets - childTickets - studentTickets - seniorTickets)
             setTotalTickets(adultTickets + childTickets + studentTickets + seniorTickets)
             setTotalCost((adultTickets * movieData.ticketAdult + childTickets * movieData.ticketChild + studentTickets * movieData.ticketStudent + seniorTickets * movieData.ticketSenior).toFixed(2))
-
         }
     }, [movieData, adultTickets, childTickets, studentTickets, seniorTickets])
 
-    const handleSelectShowing = (id) => {
+    const handleSelectShowing = (id: number) => {
         setSelectedShowing(id)
     }
 
-    const handleChangeAdultTickets = (change) => {
+    const handleChangeAdultTickets = (change: number) => {
         if(remainingTickets - change >= 0) {
         setAdultTickets(curr => curr + change)
         }
     }
-    const handleChangeChildTickets = (change) => {
+    const handleChangeChildTickets = (change: number) => {
         if(remainingTickets - change >= 0) {
         setChildTickets(curr => curr + change)
         }
     }
-    const handleChangeStudentTickets = (change) => {
+    const handleChangeStudentTickets = (change: number) => {
         if(remainingTickets - change >= 0) {
         setStudentTickets(curr => curr + change)
         }
     }
-    const handleChangeSeniorTickets = (change) => {
+    const handleChangeSeniorTickets = (change: number) => {
         if(remainingTickets - change >= 0) {
         setSeniorTickets(curr => curr + change)
         }
     }
-    const handleEmailChange = (event) => {
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setBuyersEmail(event.target.value)
     }
     const handleCheckout = () => {
@@ -122,7 +143,7 @@ export default function movieInfo() {
 
     const handleTickets = () => {
         let tickets = []
-        let nextId = ticketData.length ? ticketData.at(-1).ticketId + 1 : 1
+        let nextId =  (ticketData.at(-1)?.ticketId ?? 0) + 1
         for(let i = 0; i < adultTickets; i++) {
             tickets.push({ ticketId: nextId, ticketType: "adult" })
             nextId++
@@ -166,15 +187,20 @@ export default function movieInfo() {
         .catch(err => console.log(err))
     }
 
-    const submitAdultTicketEdit = (e) => {
-        if(e.type === 'click' || e.key === 'Enter') {
+    const submitAdultTicketEdit = (
+        e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        if (
+            e.type === 'click' ||
+            (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
+        ) {
             let value = Number(adultInputRef.current?.value).toFixed(2)
             const pricesData = {
                 movieId: movieId,
                 ticketAdult: value,
-                ticketChild: movieData.ticketChild,
-                ticketStudent: movieData.ticketStudent,
-                ticketSenior: movieData.ticketSenior
+                ticketChild: movieData?.ticketChild,
+                ticketStudent: movieData?.ticketStudent,
+                ticketSenior: movieData?.ticketSenior
             }
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
@@ -190,15 +216,20 @@ export default function movieInfo() {
         }
     }
     
-    const submitChildTicketEdit = (e) => {
-        if(e.type === 'click' || e.key === 'Enter') {
+    const submitChildTicketEdit = (
+        e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        if (
+            e.type === 'click' ||
+            (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
+        ) {
             let value = Number(childInputRef.current?.value).toFixed(2)
             const pricesData = {
                 movieId: movieId,
-                ticketAdult: movieData.ticketAdult,
+                ticketAdult: movieData?.ticketAdult,
                 ticketChild: value,
-                ticketStudent: movieData.ticketStudent,
-                ticketSenior: movieData.ticketSenior
+                ticketStudent: movieData?.ticketStudent,
+                ticketSenior: movieData?.ticketSenior
             }
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
@@ -214,15 +245,20 @@ export default function movieInfo() {
         }
     }
     
-    const submitStudentTicketEdit = (e) => {
-        if(e.type === 'click' || e.key === 'Enter') {
+    const submitStudentTicketEdit = (
+        e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        if (
+            e.type === 'click' ||
+            (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
+        ) {
             let value = Number(studentInputRef.current?.value).toFixed(2)
             const pricesData = {
                 movieId: movieId,
-                ticketAdult: movieData.ticketAdult,
-                ticketChild: movieData.ticketChild,
+                ticketAdult: movieData?.ticketAdult,
+                ticketChild: movieData?.ticketChild,
                 ticketStudent: value,
-                ticketSenior: movieData.ticketSenior
+                ticketSenior: movieData?.ticketSenior
             }
             fetch('http://localhost:8081/updateTickets', {
                     method: 'POST',
@@ -238,14 +274,19 @@ export default function movieInfo() {
         }   
     }
 
-    const submitSeniorTicketEdit = (e) => {
-        if(e.type === 'click' || e.key === 'Enter') {
+    const submitSeniorTicketEdit = (
+        e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        if (
+            e.type === 'click' ||
+            (e.type === 'keydown' && (e as React.KeyboardEvent<HTMLInputElement>).key === 'Enter')
+        ) {
             let value = Number(seniorInputRef.current?.value).toFixed(2)
             const pricesData = {
                 movieId: movieId,
-                ticketAdult: movieData.ticketAdult,
-                ticketChild: movieData.ticketChild,
-                ticketStudent: movieData.ticketStudent,
+                ticketAdult: movieData?.ticketAdult,
+                ticketChild: movieData?.ticketChild,
+                ticketStudent: movieData?.ticketStudent,
                 ticketSenior: value
             }
             fetch('http://localhost:8081/updateTickets', {
@@ -263,7 +304,7 @@ export default function movieInfo() {
     }
     console.log(movieData)
     
-    if(movieData.length === 0){
+    if(!movieData){
         return(
         <div className="h-screen">
             <title>404</title>

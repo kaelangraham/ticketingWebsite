@@ -5,10 +5,15 @@ interface popUpProps{
     onClosePopUp?: () => void
 }
 
+interface Genre {
+    id: number
+    genre: string
+}
+
 
 export default function genreFiltersPopUp({onClosePopUp}: popUpProps) {
     const [searchTerm, setSearchTerm] = useState('')
-    const [genres, setGenres] = useState([])
+    const [genres, setGenres] = useState<Genre[]>([])
     
         useEffect(() => {
             const querySearch = searchTerm
@@ -18,7 +23,7 @@ export default function genreFiltersPopUp({onClosePopUp}: popUpProps) {
             .catch(err => console.log(err))
         }, [searchTerm])
     
-        const handleSearchChange = (event) => {
+        const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             setSearchTerm(event.target.value)
         }
     return(

@@ -1,7 +1,7 @@
 import logo from './assets/logo.png'
 import { NavLink, useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
-import { useCookies, Cookies } from 'react-cookie'
+import { useCookies } from 'react-cookie'
 export default function logIn() {
     let navigate = useNavigate()
     const logins = [
@@ -29,8 +29,8 @@ export default function logIn() {
         setInputError(true)
         }
     }
-    const handleEnter = (e) => {
-        if(e.key == 'Enter') {
+    const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === 'Enter') {
             handleLogIn()
         }
     }
@@ -48,7 +48,7 @@ export default function logIn() {
                         className={['rounded py-2 w-full poppins-regular border-1 border-gray-400 px-2', inputError ? 'border-red-400' : ''].join(' ')}
                         type="text"
                         value={username}
-                        onInput={event => setUsername(event.target.value)}
+                        onInput={event => setUsername((event.target as HTMLInputElement).value)}
                     />
                 </div>
                 <div className='w-full mb-2'>
@@ -57,7 +57,7 @@ export default function logIn() {
                         className={['rounded py-2 w-full poppins-regular border-1 border-gray-400 px-2', inputError ? 'border-red-400' : ''].join(' ')}
                         type="password"
                         value={password}
-                        onInput={event => setPassword(event.target.value)}
+                        onInput={event => setPassword((event.target as HTMLInputElement).value)}
                         onKeyDown={handleEnter}
                     />
                 </div>

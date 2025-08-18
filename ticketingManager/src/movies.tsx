@@ -5,6 +5,15 @@ import lrgImg1 from './assets/sorryBabyLrg.jpg'
 import lrgImg2 from './assets/deepCoverLrg.jpg'
 import { NavLink } from 'react-router'
 
+interface movieData {
+    id: number
+    coverImg: string
+    name: string
+    description: string
+    runtime: string
+    releaseDate: number
+}
+
 export default function movies() {
     const [moviesData, setMoviesData] = useState([])
     const [displayList, setDisplayList] = useState(true)
@@ -66,7 +75,7 @@ export default function movies() {
         
         displayList ? (
         <div className='flex flex-col gap-10 pb-20'>
-            {moviesData.map((d, i) => (
+            {moviesData.map((d: movieData) => (
                 <div className='flex items-end w-210'>
                     <NavLink to={`/movies/${d.id}`} className='shrink-0'>
                         <img src={d.coverImg} className='h-60 rounded-lg cursor-pointer hover-dim transition duration-300'/>
@@ -97,7 +106,7 @@ export default function movies() {
         </div>
         ) : (
         <div className='grid grid-cols-4 w-210 gap-12 pb-20'>
-            {moviesData.map((d, i) => (
+            {moviesData.map((d: movieData) => (
                 <div className='text-pretty flex flex-col gap-2'>
                     <NavLink to={`/movies/${d.id}`}>
                         <img src={d.coverImg} className='w-1/1 rounded-lg cursor-pointer hover-dim transition duration-300'/>

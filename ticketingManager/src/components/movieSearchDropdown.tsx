@@ -1,7 +1,22 @@
 import { useNavigate } from "react-router"
-export default function movieSearchDropdown({searchData, searchTerm, dropdownFocused, clearSearch}) {
+
+interface movieParams {
+    coverImg: string
+    name: string
+    description: string
+    id: number
+}
+
+interface movieSearchParams {
+    searchData: movieParams[]
+    searchTerm: string
+    dropdownFocused: boolean
+    clearSearch: () => void
+}
+
+export default function movieSearchDropdown({searchData, searchTerm, dropdownFocused, clearSearch}: movieSearchParams) {
     let navigate = useNavigate()
-    const handleClick = (d) => {
+    const handleClick = (d: movieParams) => {
         navigate(`/movies/${d.id}`)
         clearSearch()
     }
@@ -13,7 +28,7 @@ export default function movieSearchDropdown({searchData, searchTerm, dropdownFoc
             {/* if no results show error */}
             {searchData.length === 0 ? <p className="poppins-regular tracking-tight">Sorry, we couldn't find any results</p>
             :
-            searchData.map((d,i) => (
+            searchData.map(d => (
                 <div className='flex py-3 gap-4'>
                     <img onClick={() => handleClick(d)} src={d.coverImg} className="h-30 rounded cursor-pointer hover-dim transition duration-300" />
                     <div className="">
