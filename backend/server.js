@@ -31,8 +31,9 @@ app.get('/genres', (req, res) => {
     const searchTerm = req.query.search
     const sql = `SELECT g.id, g.genre
                  FROM genres g
-                 WHERE g.genre LIKE '%${searchTerm}%'`
-    db.query(sql, (err, data) => {
+                 WHERE g.genre LIKE ?`
+    querySearchTerm = `%${searchTerm}%`
+    db.query(sql, [querySearchTerm], (err, data) => {
         if(err) return res.json(err);
         return res.json(data)
     })
@@ -41,7 +42,8 @@ app.get('/genres', (req, res) => {
 app.get('/movies', (req, res) => {
     const sortType = req.query.sortType
     const movieId = req.query.movieId
-    const sqlMovies =  `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
+    const sqlMovies =  `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, 
+                        m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
                         FROM movies m
                         JOIN theatres ON theatreId = theatres.id
                         ${movieId ? `WHERE m.id = ${movieId}` : ''}
@@ -54,18 +56,21 @@ app.get('/movies', (req, res) => {
 // movie search for navbar
 app.get('/moviesSearch', (req, res) => {
     const searchParam = req.query.searchParam
-    const sql = `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
+    const sql = `SELECT m.id, m.name, m.description, theatres.theatreName, theatres.location, m.availableTickets, m.totalTickets, 
+                 m.showingTime, m.showingDate, m.runtime, m.releaseDate, m.coverImg, m.ticketAdult, m.ticketChild, m.ticketStudent, m.ticketSenior
                  FROM movies m
                  JOIN theatres ON theatreId = theatres.id
-                 WHERE m.name LIKE '%${searchParam}%'
-                 OR m.description LIKE '%${searchParam}%'
+                 WHERE m.name LIKE ?
+                 OR m.description LIKE ?
                  ORDER BY
                  CASE
-                 WHEN m.name LIKE '%${searchParam}%' THEN 1
-                 WHEN m.description LIKE '%${searchParam}%' THEN 2
+                 WHEN m.name LIKE ? THEN 1
+                 WHEN m.description LIKE ? THEN 2
                  END
                  LIMIT 4;`
-    db.query(sql, (err, data) => {
+    const likeParam = `%${searchParam}%`
+    db.query(sql, [likeParam, likeParam, likeParam, likeParam], (err, data) => {
+        console.log(err, data)
         if(err) return res.json(err);
         return res.json(data)
     })
